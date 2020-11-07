@@ -90,6 +90,12 @@ class State:
         multiplier = 1.0 / harmonic_ave
         return self.pop * multiplier
 
+    def validate_no_reps_matches_actual(self):
+        # Validate that they match the expected
+        if self.no_reps_assigned != self.no_reps_actual:
+            raise ValueError("State: %s no. reps assigned: %d does not match the actual no. reps: %d" % 
+                (self.st, self.no_reps_assigned, self.no_reps_actual))
+
     @classmethod
     def actual(cls, st: St):
 
@@ -254,116 +260,3 @@ class State:
             raise ValueError("State not recognized: %s" % st)
 
         return cls(st, pop_actual, no_reps_actual)
-
-states = {}
-for st in St:
-    states[st] = State.actual(st)
-
-total_us_population = sum(states[state].pop for state in St)
-# total_us_population = 309.183463
-print("US population: %f" % total_us_population)
-
-no_voting_house_seats = 435
-
-def assign_house_seats_theory(states: Dict[St, State]):
-
-    ideal = total_us_population / no_voting_house_seats
-    print("Ideal size: %f" % ideal)
-
-    i_try = 0
-    no_tries_max = 100
-
-    no_voting_house_seats_assigned = 0
-    while (no_voting_house_seats_assigned != no_voting_house_seats) and (i_try < no_tries_max):
-
-        for st, state in states.items():
-        
-            state.no_reps_ideal = state.pop / ideal
-
-        for st, state in states.items():
-
-            # Minimum of 1
-            if state.no_reps_ideal < 1:
-                state.no_reps_assigned = 1
-                continue
-
-            lower = int(state.no_reps_ideal)
-            upper = lower + 1
-            harmonic_ave = harmonic_mean(lower, upper)
-
-            if state.no_reps_ideal < harmonic_ave:
-                no_seats = lower
-            elif state.no_reps_ideal > harmonic_ave:
-                no_seats = upper
-            else:
-                raise ValueError("Something went wrong!")
-
-            state.no_reps_assigned = no_seats
-            # print("Rounded %f  UP  to %d based on harmonic mean %f" % (ideal_no, upper, harmonic_ave))
-
-        no_voting_house_seats_assigned = sum([state.no_reps_assigned for state in states.values()])
-        # print(no_voting_house_seats_assigned)
-
-        if no_voting_house_seats_assigned == no_voting_house_seats:
-            # Done!
-            print("Adjusted ideal size: %f" % ideal)
-            return
-
-        else:
-            # Adjust the ideal fraction!
-            ideal_old = ideal
-
-            if no_voting_house_seats_assigned > no_voting_house_seats:
-                # Tune up
-                ideal *= 1.0001
-            elif no_voting_house_seats_assigned < no_voting_house_seats:
-                # Tune down
-                ideal *= 0.9999
-
-            print("Try: %d assigned: %d Adjusted ideal: %f to %f" % (i_try,no_voting_house_seats_assigned,ideal_old,ideal))
-
-            i_try += 1
-
-def assign_house_seats_priority(states: Dict[St, State]):
-
-    # Assign each state mandatory 1 delegate
-    no_voting_house_seats_assigned = 0
-    for state in states.values():
-        state.no_reps_assigned = 1
-        no_voting_house_seats_assigned += 1
-
-    # Assign the remaining using priorities
-    st_all = [st for st in St]
-    while no_voting_house_seats_assigned < no_voting_house_seats:
-
-        # Find the highest priority
-        priorities = [states[st].get_priority() for st in st_all]
-        idx = np.argmax(priorities)
-        st_assign = st_all[idx]
-
-        # print("Seat: %d state: %s priority: %f" % (no_voting_house_seats_assigned, st_assign, priorities[idx]))
-
-        # Assign
-        states[st_assign].no_reps_assigned += 1
-        no_voting_house_seats_assigned += 1
-
-# Assign house seats
-assign_house_seats_priority(states)
-
-# Validate that they match the expected
-for st, state in states.items():
-    if state.no_reps_assigned != state.no_reps_actual:
-        raise ValueError("State: %s no. reps assigned: %d does not match the actual no. reps: %d" % (st, state.no_reps_assigned, state.no_reps_actual))
-
-# Check no electoral college votes
-no_electoral_votes = sum([state.get_no_electoral_votes() for state in states.values()])
-# + 3 for DC
-no_electoral_votes += 3
-print("No electoral votes: %d" % no_electoral_votes)
-
-# Fraction
-for state in states.values():
-    state.frac_electoral = state.get_no_electoral_votes() / no_electoral_votes
-    state.frac_vote = state.frac_electoral * (total_us_population / state.pop)
-
-    print("State: %20s frac electoral: %.5f frac vote: %.5f" % (state.st, state.frac_electoral, state.frac_vote))
