@@ -44,6 +44,10 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 def index():
     return render_template('index.html', move_people_value=0)
 
+@app.route('/about', methods=['GET','POST'])
+def about():
+    return render_template('about.html')
+
 @app.route("/get_list_of_states", methods=["POST"])
 def get_list_of_states() -> str:
 

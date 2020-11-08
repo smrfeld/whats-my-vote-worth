@@ -20,106 +20,19 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">About</a>
+                <a class="nav-link" href="about">About</a>
             </li>
             </ul>
         </div>
     </nav>
     <div class="container">
         {% block content %} {% endblock %}
+        <footer>
+            Created by <a href="https://oliver-ernst.com">Oliver K. Ernst</a> (2020). 
+            <br />
+            Released under MIT license.
+        </footer>
     </div>
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    
-    <!-- bootstrap-select -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.min.js"></script>
-    
-    <script>
-
-        $(document).ready(function(){
-            var move_people_slider = document.getElementById("move_people_slider");
-
-            // Include map svg
-            $("#includeMap").load("{{url_for('static', filename='map.svg')}}"); 
-
-            // Fill out selectors
-            $.ajax({
-                url: "/get_list_of_states",
-                type: "post",
-                success: function(response) {
-                    $("#state_detail_select").html(response);
-                    $("#state_move_from_select").html(response);
-                    $("#state_move_to_select").html(response);
-
-                    $('select').selectpicker();
-                },
-                error: function(xhr) {
-                    console.log("error")
-                    //Do Something to handle error
-                }
-            });
-
-            // Color map
-            function reload(move_people_value) {
-                $.ajax({
-                        url: "/move_people",
-                        type: "post",
-                        data: $('#move_people_form').serialize(),
-                        success: function(response) {
-
-                            // Skip updating if the slider has changed more
-                            if (move_people_slider.value != move_people_value) {
-                                return;
-                            }
-
-                            console.log("success")
-                            console.log(response)
-
-                            // Fill out colors
-                            for (let [key, value] of Object.entries(response)) {
-                                console.log(key + " -> " + value);
-                                $(key).css("fill",value);
-                            };
-
-                            $("#move_people_value_span").html(move_people_value);
-                        },
-                        error: function(xhr) {
-                            console.log("error")
-                            //Do Something to handle error
-                        }
-                    });
-            }
-
-            // Submit slider
-            move_people_slider.addEventListener('input', function () {
-
-                var move_people_value = move_people_slider.value;
-                $("#move_people_value_span").html(move_people_value);
-
-                // Wait 0.1s in case you're moving the slider really fast
-                setTimeout(() => {
-
-                    // Skip updating if the slider has changed more
-                    if (move_people_slider.value != move_people_value) {
-                        return;
-                    }
-
-                    reload(move_people_value);
-                }, 100);
-
-            }, false);
-
-            // Trigger map by "clicking" it
-            reload(0);
-        });
-
-    </script>
 
   </body>
 </html>

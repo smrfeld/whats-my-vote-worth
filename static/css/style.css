@@ -32,6 +32,11 @@ h7 {
     color: #B3B3B3;
 }
 
+footer {
+    color: #B3B3B3;  
+    text-align: center;
+}
+
 svg {
     max-width: 100%;
     max-height: auto;
