@@ -1,4 +1,6 @@
-from .state import *
+from .state import State, St, harmonic_mean
+import logging
+import numpy as np
 
 class States:
 
@@ -10,6 +12,13 @@ class States:
         self.states = {}
         for st in St:
             self.states[st] = State.actual(st)
+
+        # Logging
+        handlerPrint = logging.StreamHandler()
+        handlerPrint.setLevel(logging.DEBUG)
+        self.log = logging.getLogger("states")
+        self.log.addHandler(handlerPrint)
+        self.log.setLevel(logging.DEBUG)
 
     def validate_no_reps_matches_actual(self):
         for state in self.states.values():
@@ -23,22 +32,29 @@ class States:
         
         # Check no electoral college votes
         no_electoral_votes = sum([state.get_no_electoral_votes() for state in self.states.values()])
-        
-        # + 3 for DC
-        no_electoral_votes += 3
-        
-        print("No electoral votes: %d" % no_electoral_votes)
+                
+        self.log.debug("No electoral votes: %d" % no_electoral_votes)
         return no_electoral_votes
 
     def get_total_us_population(self) -> float:
         total_us_population = sum(self.states[state].pop for state in St)
-        print("US population: %f" % total_us_population)
+        self.log.debug("US population: %f" % total_us_population)
         return total_us_population
+
+    def get_total_us_population_excluding_DC(self) -> float:
+        total_us_population_excluding_DC = sum(self.states[st].pop for st in St if st != St.DISTRICT_OF_COLUMBIA)
+        self.log.debug("US population excluding DC: %f" % total_us_population_excluding_DC)
+        return total_us_population_excluding_DC
 
     def get_total_us_population_actual(self) -> float:
         total_us_population_actual = sum(self.states[state].pop_actual for state in St)
-        print("US population actual: %f" % total_us_population_actual)
+        self.log.debug("US population actual: %f" % total_us_population_actual)
         return total_us_population_actual
+
+    def get_total_us_population_excluding_DC_actual(self) -> float:
+        total_us_population_excluding_DC_actual = sum(self.states[st].pop_actual for st in St if st != St.DISTRICT_OF_COLUMBIA)
+        self.log.debug("US population excluding DC actual: %f" % total_us_population_excluding_DC_actual)
+        return total_us_population_excluding_DC_actual
 
     def calculate_state_vote_fracs(self):
         
@@ -46,12 +62,14 @@ class States:
         no_electoral_votes = self.get_no_electoral_votes()
 
         # Fraction
+        self.log.debug("----- State vote fracs -----")
         for state in self.states.values():
             state.frac_electoral = state.get_no_electoral_votes() / no_electoral_votes
             state.frac_vote = state.frac_electoral * (total_us_population / state.pop)
 
-            print("State: %20s frac electoral: %.5f frac vote: %.5f" % 
+            self.log.debug("State: %25s frac electoral: %.5f frac vote: %.5f" % 
                 (state.st, state.frac_electoral, state.frac_vote))
+        self.log.debug("----------")
 
     def reset_state_populations_to_actual(self):
         for state in self.states.values():
@@ -74,9 +92,11 @@ class States:
             # Increment population of other states
             state_other.pop = state_other.pop_actual + frac * no_leave
 
-        print("Populations after: %f million people leave: %s" % (no_leave, st))
+        self.log.debug("----------")
+        self.log.debug("Populations after %s changes population by: %f million people" % (st, no_leave))
         for state in self.states.values():
-            print("%20s : %.5f -> %.5f" % (state.st, state.pop_actual, state.pop))
+            self.log.debug("%20s : %.5f -> %.5f" % (state.st, state.pop_actual, state.pop))
+        self.log.debug("----------")
 
         # Validate nobody got lost!
         err = 0.01
@@ -84,8 +104,8 @@ class States:
 
     def assign_house_seats_theory(self):
 
-        ideal = self.get_total_us_population() / self.no_voting_house_seats
-        print("Ideal size: %f" % ideal)
+        ideal = self.get_total_us_population_excluding_DC() / self.no_voting_house_seats
+        self.log.debug("Ideal size: %f" % ideal)
 
         i_try = 0
         no_tries_max = 100
@@ -93,37 +113,45 @@ class States:
         no_voting_house_seats_assigned = 0
         while (no_voting_house_seats_assigned != self.no_voting_house_seats) and (i_try < no_tries_max):
 
-            for st, state in self.states.items():
-            
-                state.no_reps_ideal = state.pop / ideal
+            for state in self.states.values():
 
-            for st, state in self.states.items():
-
-                # Minimum of 1
-                if state.no_reps_ideal < 1:
-                    state.no_reps_assigned = 1
+                if state.st == St.DISTRICT_OF_COLUMBIA:
+                    state.no_nonvoting_reps_assigned = 1
+                    state.no_voting_reps_assigned = 0
                     continue
 
-                lower = int(state.no_reps_ideal)
+                # All other states only have voting reps
+                state.no_nonvoting_reps_assigned = 0
+
+                # Ideal
+                no_reps_ideal = state.pop / ideal
+
+                # Minimum of 1
+                if no_reps_ideal < 1:
+                    state.no_voting_reps_assigned = 1
+                    continue
+
+                lower = int(no_reps_ideal)
                 upper = lower + 1
                 harmonic_ave = harmonic_mean(lower, upper)
 
-                if state.no_reps_ideal < harmonic_ave:
+                if no_reps_ideal < harmonic_ave:
                     no_seats = lower
-                elif state.no_reps_ideal > harmonic_ave:
+                elif no_reps_ideal > harmonic_ave:
                     no_seats = upper
                 else:
-                    raise ValueError("Something went wrong!")
+                    self.log.error("Something went wrong!")
+                    continue
 
-                state.no_reps_assigned = no_seats
-                # print("Rounded %f  UP  to %d based on harmonic mean %f" % (ideal_no, upper, harmonic_ave))
+                state.no_voting_reps_assigned = no_seats
+                # self.log.debug("Rounded %f  UP  to %d based on harmonic mean %f" % (ideal_no, upper, harmonic_ave))
 
-            no_voting_house_seats_assigned = sum([state.no_reps_assigned for state in self.states.values()])
-            # print(no_voting_house_seats_assigned)
+            no_voting_house_seats_assigned = sum([state.no_voting_reps_assigned for state in self.states.values()])
+            # self.log.debug(no_voting_house_seats_assigned)
 
             if no_voting_house_seats_assigned == self.no_voting_house_seats:
                 # Done!
-                print("Adjusted ideal size: %f" % ideal)
+                self.log.debug("Adjusted ideal size: %f" % ideal)
                 return
 
             else:
@@ -137,7 +165,11 @@ class States:
                     # Tune down
                     ideal *= 0.9999
 
-                print("Try: %d assigned: %d Adjusted ideal: %f to %f" % (i_try,no_voting_house_seats_assigned,ideal_old,ideal))
+                self.log.debug("Try: %d assigned: %d Adjusted ideal: %f to %f" % (
+                    i_try,
+                    no_voting_house_seats_assigned,
+                    ideal_old,
+                    ideal))
 
                 i_try += 1
 
@@ -147,11 +179,16 @@ class States:
 
         # Assign each state mandatory 1 delegate
         for state in self.states.values():
-            state.no_reps_assigned = 1
-            no_voting_house_seats_assigned += 1
+            if state.st == St.DISTRICT_OF_COLUMBIA:
+                state.no_voting_reps_assigned = 0
+                state.no_nonvoting_reps_assigned = 1
+            else:
+                state.no_voting_reps_assigned = 1
+                state.no_nonvoting_reps_assigned = 0
+                no_voting_house_seats_assigned += 1
 
         # Assign the remaining using priorities
-        st_all = [st for st in St]
+        st_all = [st for st in St if st != St.DISTRICT_OF_COLUMBIA]
         while no_voting_house_seats_assigned < self.no_voting_house_seats:
 
             # Find the highest priority
@@ -159,8 +196,8 @@ class States:
             idx = np.argmax(priorities)
             st_assign = st_all[idx]
 
-            # print("Seat: %d state: %s priority: %f" % (no_voting_house_seats_assigned, st_assign, priorities[idx]))
+            # self.log.debug("Seat: %d state: %s priority: %f" % (no_voting_house_seats_assigned, st_assign, priorities[idx]))
 
             # Assign
-            self.states[st_assign].no_reps_assigned += 1
+            self.states[st_assign].no_voting_reps_assigned += 1
             no_voting_house_seats_assigned += 1

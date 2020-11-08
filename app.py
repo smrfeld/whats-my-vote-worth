@@ -77,6 +77,10 @@ def move_people() -> Dict[str, str]:
     ret_dict = {}
     for state in app.states.states.values():
         ret_dict["#"+state.abbrev] = get_hex_from_vote_frac(state.frac_vote)
+
+    # DC is always 3
+    ret_dict["#DC"] = get_hex_from_vote_frac(state.frac_vote)
+
     print(ret_dict)
     return ret_dict
 
