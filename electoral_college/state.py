@@ -55,6 +55,26 @@ class St(Enum):
     VERMONT = 50
     WYOMING = 51
 
+def get_label_from_st(st : St) -> str:
+
+    name = str(st)
+    name = name.lower()
+    name = name[3:]
+    
+    # Capitalize west virginia -> West Virginia
+    words = name.split('_')
+    print(words)
+    name = ' '.join([n.capitalize() if n != "of" else n for n in words])
+
+    return name
+
+def get_st_from_label(label : str) -> St:
+    words = label.split()
+    name = '_'.join(words)
+    name.capitalize()
+
+    return St[name]
+
 def arithmetic_mean(n : float, m : float) -> float:
     return (n + m) / 2.0
 

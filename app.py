@@ -44,11 +44,19 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 def index():
     return render_template('index.html', move_people_value=0)
 
-@app.route("/test", methods=["POST"])
-def test():
-    move_people_value = request.form["move_people_slider_name"]
-    print(move_people_value)
-    return render_template('index.html', move_people_value=move_people_value)
+@app.route("/get_list_of_states", methods=["POST"])
+def get_list_of_states() -> str:
+
+    # Sort states
+    names = [get_label_from_st(st) for st in St]
+    names.sort()
+
+    # Options
+    ret = ""
+    for name in names:
+        ret += '<option>%s</option>' % (name)
+
+    return ret
 
 @app.route("/move_people", methods=["POST"])
 def move_people() -> Dict[str, str]:
@@ -70,7 +78,7 @@ def move_people() -> Dict[str, str]:
 
         # Check no electoral college votes
         app.states.calculate_state_vote_fracs()
-
+    
     except:
         print("Move people value not an integer?")
 
@@ -78,11 +86,5 @@ def move_people() -> Dict[str, str]:
     for state in app.states.states.values():
         ret_dict["#"+state.abbrev] = get_hex_from_vote_frac(state.frac_vote)
 
-    # DC is always 3
-    ret_dict["#DC"] = get_hex_from_vote_frac(state.frac_vote)
-
     print(ret_dict)
     return ret_dict
-
-    return move_people_value
-    # return render_template('index.html', move_people_value=move_people_value)
