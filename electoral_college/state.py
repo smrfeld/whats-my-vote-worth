@@ -67,9 +67,10 @@ def geometric_mean(n : float, m : float) -> float:
 
 class State:
     
-    def __init__(self, st: St, pop_actual: float, no_reps_actual: int):
+    def __init__(self, st: St, pop_actual: float, no_reps_actual: int, abbrev: str):
         self.st = st
-        
+        self.abbrev = abbrev
+
         self.pop = pop_actual
         self.pop_actual = pop_actual
 
@@ -106,157 +107,207 @@ class State:
         if st == St.CALIFORNIA:
             pop_actual = 37.341989
             no_reps_actual = 53
+            abbrev = "CA"
         elif st == St.TEXAS:
             pop_actual = 25.268418
             no_reps_actual = 36
+            abbrev = "TX"
         elif st == St.FLORIDA:
             pop_actual = 18.900773	
             no_reps_actual = 27
+            abbrev = "FL"
         elif st == St.NEW_YORK:
             pop_actual = 19.421055
             no_reps_actual = 27
+            abbrev = "NY"
         elif st == St.PENNSYLVANIA:
             pop_actual = 12.734905
             no_reps_actual = 18
+            abbrev = "PA"
         elif st == St.ILLINOIS:
             pop_actual = 12.864380
             no_reps_actual = 18
+            abbrev = "IL"
         elif st == St.OHIO:
             pop_actual = 11.568495
             no_reps_actual = 16
+            abbrev = "OH"
         elif st == St.GEORGIA:
             pop_actual = 9.727566
             no_reps_actual = 14
+            abbrev = "GA"
         elif st == St.NORTH_CAROLINA:
             pop_actual = 9.565781
             no_reps_actual = 13
+            abbrev = "NC"
         elif st == St.MICHIGAN:
             pop_actual = 9.911626
             no_reps_actual = 14
+            abbrev = "MI"
         elif st == St.NEW_JERSEY:
             pop_actual = 8.807501
             no_reps_actual = 12
+            abbrev = "NJ"
         elif st == St.VIRGINIA:
             pop_actual = 8.037736
             no_reps_actual = 11
+            abbrev = "VA"
         elif st == St.WASHINGTON:
             pop_actual = 6.753369	
             no_reps_actual = 10
+            abbrev = "WA"
         elif st == St.ARIZONA:
             pop_actual = 6.412700
             no_reps_actual = 9 
+            abbrev = "AZ"
         elif st == St.MASSACHUSETTS:
             pop_actual = 6.559644
             no_reps_actual = 9
+            abbrev = "MA"
         elif st == St.TENNESSEE:
             pop_actual = 6.375431
             no_reps_actual = 9
+            abbrev = "TN"
         elif st == St.INDIANA:
             pop_actual = 6.501582
             no_reps_actual = 9
+            abbrev = "IN"
         elif st == St.MISSOURI:
             pop_actual = 6.011478
             no_reps_actual = 8
+            abbrev = "MO"
         elif st == St.MARYLAND:
             pop_actual = 5.789929	
             no_reps_actual = 8
+            abbrev = "MD"
         elif st == St.WISCONSION:
             pop_actual = 5.698230
             no_reps_actual = 8
+            abbrev = "WI"
         elif st == St.COLORADO:
             pop_actual = 5.044930
             no_reps_actual = 7
+            abbrev = "CO"
         elif st == St.MINNESOTA:
             pop_actual = 5.314879
             no_reps_actual = 8
+            abbrev = "MN"
         elif st == St.SOUTH_CAROLINA:
             pop_actual = 4.645975
             no_reps_actual = 7
+            abbrev = "SC"
         elif st == St.ALABAMA:
             pop_actual = 4.802982
             no_reps_actual = 7
+            abbrev = "AL"
         elif st == St.LOUISIANA:
             pop_actual = 4.553962
             no_reps_actual = 6
+            abbrev = "LA"
         elif st == St.KENTUCKY:
             pop_actual = 4.350606
             no_reps_actual = 6
+            abbrev = "KY"
         elif st == St.OREGON:
             pop_actual = 3.848606
             no_reps_actual = 5
+            abbrev = "OR"
         elif st == St.OKLAHOMA:
             pop_actual = 3.764882
             no_reps_actual = 5
+            abbrev = "OK"
         elif st == St.CONNECTICUT:
             pop_actual = 3.581628
             no_reps_actual = 5
+            abbrev = "CT"
         elif st == St.UTAH:
             pop_actual = 2.770765
             no_reps_actual = 4
+            abbrev = "UT"
         elif st == St.IOWA:
             pop_actual = 3.053787
             no_reps_actual = 4
+            abbrev = "IA"
         elif st == St.NEVADA:
             pop_actual = 2.709432
             no_reps_actual = 4
+            abbrev = "NV"
         elif st == St.ARKANSAS:
             pop_actual = 2.926229
             no_reps_actual = 4
+            abbrev = "AR"
         elif st == St.MISSISSIPPI:
             pop_actual = 2.978240	
             no_reps_actual = 4
+            abbrev = "MS"
         elif st == St.KANSAS:
             pop_actual = 2.863813	
             no_reps_actual = 4
+            abbrev = "KS"
         elif st == St.NEW_MEXICO:
             pop_actual = 2.067273
             no_reps_actual = 3
+            abbrev = "NM"
         elif st == St.NEBRASKA:
             pop_actual = 1.831825
             no_reps_actual = 3
+            abbrev = "NE"
         elif st == St.WEST_VIRGINIA:
             pop_actual = 1.859815
             no_reps_actual = 3
+            abbrev ="WV"
         elif st == St.IDAHO:
             pop_actual = 1.573499
             no_reps_actual = 2
+            abbrev = "ID"
         elif st == St.HAWAII:
             pop_actual = 1.366862
             no_reps_actual = 2
+            abbrev = "HI"
         elif st == St.NEW_HAMPSHIRE:
             pop_actual = 1.321445
             no_reps_actual = 2
+            abbrev = "NH"
         elif st == St.MAINE:
             pop_actual = 1.333074
             no_reps_actual = 2
+            abbrev = "ME"
         elif st == St.MONTANA:
             pop_actual = 0.994416
             no_reps_actual = 1
+            abbrev = "MT"
         elif st == St.RHODE_ISLAND:
             pop_actual = 1.055247
             no_reps_actual = 2
+            abbrev = "RI"
         elif st == St.DELAWARE:
             pop_actual = 0.900877
             no_reps_actual = 1
+            abbrev = "DE"
         elif st == St.SOUTH_DEKOTA:
             pop_actual = 0.819761
             no_reps_actual = 1
+            abbrev = "SD"
         elif st == St.NORTH_DEKOTA:
             pop_actual = 0.675905
             no_reps_actual = 1
+            abbrev = "ND"
         elif st == St.ALASKA:
             pop_actual = 0.721523
             no_reps_actual = 1
+            abbrev = "AK"
         elif st == St.VERMONT:
             pop_actual = 0.630337
             no_reps_actual = 1
+            abbrev = "VT"
         elif st == St.WYOMING:
             pop_actual = 0.568300	
             no_reps_actual = 1
+            abbrev = "WY"
         #elif st == St.DISTRICT_OF_COLUMBIA:
         #    pop_actual = 0.705749
 
         else:
             raise ValueError("State not recognized: %s" % st)
 
-        return cls(st, pop_actual, no_reps_actual)
+        return cls(st, pop_actual, no_reps_actual, abbrev)

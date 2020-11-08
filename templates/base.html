@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
 
-    <title>{% block title %} {% endblock %}</title>
+    <title>What's my vote worth?</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('index')}}">FlaskBlog</a>
+        <a class="navbar-brand" href="{{ url_for('index')}}">What's my vote worth?</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -74,16 +74,21 @@
             move_people_slider.onmouseup = function () {
                 // document.getElementById("move_people_form").submit();
                 var move_people_value = $(this).val();
+                $("#move_people_value_span").html(move_people_value);
                 console.log(move_people_value);
 
                 $.ajax({
-                    url: "/test2",
+                    url: "/move_people",
                     type: "post",
                     data: $('#move_people_form').serialize(),
                     success: function(response) {
                         console.log("success")
-                        $("#move_people_value_span").html(response);
-                        $("#PA").css("fill","#0000FF");
+                        console.log(response)
+                        // $("#PA").css("fill","#0000FF");
+                        for (let [key, value] of Object.entries(response)) {
+                            console.log(key + " -> " + value);
+                            $(key).css("fill",value);
+                        };
                     },
                     error: function(xhr) {
                         console.log("error")
