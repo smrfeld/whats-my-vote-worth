@@ -2,6 +2,127 @@
 
 {% block content %}
     
-{% block title %} <h1> What's my vote worth? </h1> <h4 style="color: gray;"> Your state's voting power in the electoral college </h4> {% endblock %}
+{% block title %} 
+<h1> What's my vote worth? </h1> 
+<h4 style="color: #949494;"> Your state's voting power in the electoral college </h4> 
+
+<div class="row">
+
+    <!-- Left row -->
+    <div class="col-lg-6">
+        
+        <div id="includeMap"></div>
+        
+        <!-- Do not include map using img - then it can't be edited using css -->
+        <!--
+            <img src="{{url_for('static', filename='map.svg')}}"/>
+        -->
+
+    </div>
+
+    <!-- Right row -->
+    <div class="col-lg-6">
+
+        <form method="POST" action="" id="move_people_form">
+
+            <!-- State choose -->
+            <div class="row align-items-center">
+                <div class="col-sm-3">
+                    <h3>State:</h3>
+                </div>
+                <div class="col-sm-9">
+                    <select name="state_detail" id="state_detail_select" data-live-search="true"></select>
+                </div>
+            </div>
+
+            <!-- State detail -->
+            <br />
+            <div class="row align-items-end">
+                <div class="col-sm-4">
+                    <h1>0.1</h1>
+                    <h7>vote fraction</h7>
+                </div>
+                <div class="col-sm-4">
+                    <h4>18</h4>
+                    <h7>electoral votes</h7>
+                </div>
+                <div class="col-sm-4">
+                    <h4>30</h4>
+                    <h7>million people</h7>
+                </div>
+            </div>
+            <br />
+
+            <h7>US Population (fixed): 309 million people</h7> <br />
+            <h7>No. electoral votes (fixed): 538</h7> <br /> <br />
+
+            <h3>Move population:</h3>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <h7>From:</h7><br />
+                    <select name="state_move_from" id="state_move_from_select" data-live-search="true"></select>
+                    
+                    <br /><br />
+                    <div class="row align-items-end">
+                        <div class="col-sm-4">
+                            <h4>0.1</h4>
+                            <h7>vote fraction</h7>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>18</h4>
+                            <h7>electoral votes</h7>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>30</h4>
+                            <h7>million people</h7>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <h7>To:</h7><br />
+                    <select name="state_move_to" id="state_move_to_select" data-live-search="true"></select>
+
+                    <br /><br />
+                    <div class="row align-items-end">
+                        <div class="col-sm-4">
+                            <h4>0.1</h4>
+                            <h7>vote fraction</h7>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>18</h4>
+                            <h7>electoral votes</h7>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>30</h4>
+                            <h7>million people</h7>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row align-items-start">
+                <div class="col-sm-8">
+                    <h7>Percentage of people to move:</h7>
+                    <div class="slidecontainer">
+                        <input type="range" min="0" max="100" value={{move_people_value}} class="slider" id="move_people_slider" name="move_people_slider_name">            
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <h3><span id="move_people_value_span"></span></h3>
+                    <h7>percent</h7>
+                </div>
+                <div class="col-sm-2">
+                    <h3>0</h3>
+                    <h7>million people</h7>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
 
 {% endblock %}
