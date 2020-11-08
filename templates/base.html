@@ -31,36 +31,74 @@
 
     <div class="row">
         <div class="col-lg-6">
-            <img src="{{url_for('static', filename='map.svg')}}"/>
+            
+            <div id="includeMap"></div>
+            
+            <!-- Do not include map using img - then it can't be edited using css -->
+            <!--
+                <img src="{{url_for('static', filename='map.svg')}}"/>
+            -->
+
+
+
+
+            
+
+
+
+
+
+
+
         </div>
         <div class="col-lg-6">
 
-            <form method="POST" action="test" id="test_form">
-                <input type="range" min="0" max="100" name="name_of_slider" id="this_slider" />
-                <input type="submit" value="submit" />
+            <form method="POST" action="" id="move_people_form">
+                <div class="slidecontainer">
+                    <input type="range" min="-100" max="100" value={{move_people_value}} class="slider" id="move_people_slider" name="move_people_slider_name">            
+                    <p>Value: <span id="move_people_value_span"></span></p>
+                </div>
             </form>
-
-            <div class="slidecontainer">
-                <input type="range" min={{min}} max={{max}} value={{max}} class="slider" id="myRange" name="faturamento">            
-                <p>Value: <span id="demo"></span></p>
-            </div>
         </div>
     </div>    
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-    <script>
     
-        var slider = document.getElementById("this_slider");
-        console.log(slider)
-        slider.onmouseup = function () {
-            console.log("Ok")
-            document.getElementById("test_form").submit();
-        }
+    <script>
+
+        $(document).ready(function(){
+
+            // Include map svg
+            $("#includeMap").load("{{url_for('static', filename='map.svg')}}"); 
+
+            var move_people_slider = document.getElementById("move_people_slider");
+
+            // Submit slider
+            move_people_slider.onmouseup = function () {
+                // document.getElementById("move_people_form").submit();
+                var move_people_value = $(this).val();
+                console.log(move_people_value);
+
+                $.ajax({
+                    url: "/test2",
+                    type: "post",
+                    data: $('#move_people_form').serialize(),
+                    success: function(response) {
+                        console.log("success")
+                        $("#move_people_value_span").html(response);
+                        $("#PA").css("fill","#0000FF");
+                    },
+                    error: function(xhr) {
+                        console.log("error")
+                        //Do Something to handle error
+                    }
+                });
+            }
+        });
 
     </script>
 
