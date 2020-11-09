@@ -144,15 +144,15 @@
         <br />
 
         <div class="row align-items-end">
-            <div class="col-sm-6">
+            <div class="col-md-6">
                 <h6 class="underlabel">Biggest vote fraction*:</h6>
-                <h1>0.1</h1>
-                <h6 class="underlabel">California</h6>
+                <h1><span id="biggest_frac">0.00</span></h1>
+                <h6 class="underlabel"><span id="biggest_frac_state">-</span></h6>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-6">
                 <h6 class="underlabel">Smallest vote fraction*:</h6>
-                <h1>18</h1>
-                <h6 class="underlabel">Wyoming</h6>
+                <h1><span id="smallest_frac">0.00</span></h1>
+                <h6 class="underlabel"><span id="smallest_frac_state">-</span></h6>
             </div>
         </div>
         <br />
@@ -160,9 +160,9 @@
         <div class="row">
             <div class="col-sm-12">
                 <p class="footnote">
-                    *A fraction of 1 is your voting power if the popular vote were used to determine the US president, 
+                    *A fraction of 1 means your voting power is as if the popular vote were used to determine the US president, 
                     i.e. if there were no electoral college, 
-                    i.e. 1/(population of the United States) ~ 1/(309 million). 
+                    i.e. your vote counted 1/(population of the United States) ~ 1/(309 million). 
                     See <a href="about">about</a> for more information.</p>
                 <p class="footnote">Total U.S. Population (fixed): 309 million people</p>
                 <p class="footnote">Total no. electoral votes (fixed): 538</p>
@@ -189,16 +189,16 @@
                     
                     <br /><br />
                     <div class="row align-items-end">
-                        <div class="col-sm-4">
-                            <h1>0.1</h1>
+                        <div class="col-sm-5">
+                            <h1><span id="compare_left_frac">0.00</span></h1>
                             <h6 class="underlabel">vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h5>18</h5>
+                            <h5><span id="compare_left_votes">00</span></h5>
                             <h6 class="underlabel">electoral votes</h6>
                         </div>
-                        <div class="col-sm-4">
-                            <h5>30</h5>
+                        <div class="col-sm-3">
+                            <h5><span id="compare_left_pop">000</span></h5>
                             <h6 class="underlabel">million people</h6>
                         </div>
                     </div>
@@ -209,16 +209,16 @@
 
                     <br /><br />
                     <div class="row align-items-end">
-                        <div class="col-sm-4">
-                            <h1>0.1</h1>
+                        <div class="col-sm-5">
+                            <h1><span id="compare_right_frac">0.00</span></h1>
                             <h6 class="underlabel">vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h5>18</h5>
+                            <h5><span id="compare_right_votes">00</span></h5>
                             <h6 class="underlabel">electoral votes</h6>
                         </div>
-                        <div class="col-sm-4">
-                            <h5>30</h5>
+                        <div class="col-sm-3">
+                            <h5><span id="compare_right_pop">000</span></h5>
                             <h6 class="underlabel">million people</h6>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
             </div>
             <br />
 
-            <h4>A vote in Wyoming is worth <span style="color: blue;">3.32</span> as much as a vote in California.</h4>
+            <h4>A vote in <span id="compare_first">...</span> is worth <span id="compare_rel" style="color: blue;">...</span> as much as a vote in <span id="compare_second">...</span>.</h4>
 
             <hr/>
 
@@ -240,16 +240,16 @@
                     
                     <br /><br />
                     <div class="row align-items-end">
-                        <div class="col-sm-4">
-                            <h1>0.1</h1>
+                        <div class="col-sm-5">
+                            <h1><span id="move_left_frac">0.00</span></h1>
                             <h6 class="underlabel">vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h5>18</h5>
+                            <h5><span id="move_left_vote">00</span></h5>
                             <h6 class="underlabel">electoral votes</h6>
                         </div>
-                        <div class="col-sm-4">
-                            <h5>30</h5>
+                        <div class="col-sm-3">
+                            <h5><span id="move_left_pop">000</span></h5>
                             <h6 class="underlabel">million people</h6>
                         </div>
                     </div>
@@ -261,16 +261,16 @@
 
                     <br /><br />
                     <div class="row align-items-end">
-                        <div class="col-sm-4">
-                            <h1>0.1</h1>
+                        <div class="col-sm-5">
+                            <h1><span id="move_right_frac">0.00</span></h1>
                             <h6 class="underlabel">vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h5>18</h5>
+                            <h5><span id="move_right_vote">00</span></h5>
                             <h6 class="underlabel">electoral votes</h6>
                         </div>
-                        <div class="col-sm-4">
-                            <h5>30</h5>
+                        <div class="col-sm-3">
+                            <h5><span id="move_right_pop">000</span></h5>
                             <h6 class="underlabel">million people</h6>
                         </div>
                     </div>
@@ -282,15 +282,15 @@
                 <div class="col-sm-8">
                     <h6 class="overlabel">Percentage of people to move:</h6>
                     <div class="slidecontainer">
-                        <input type="range" min="0" max="99" value={{move_people_value}} class="slider" id="move_people_slider" name="move_people_slider_name">            
+                        <input type="range" min="0" max="99" value="0" class="slider" id="move_people_slider" name="move_people_slider_name">            
                     </div>
                 </div>
                 <div class="col-sm-2">
-                    <h5><span id="move_people_value_span"></span></h5>
+                    <h5><span id="move_people_value_span">0</span></h5>
                     <h6 class="underlabel">percent</h6>
                 </div>
                 <div class="col-sm-2">
-                    <h5>0</h5>
+                    <h5><span id="move_people_value_pop">000</span></h5>
                     <h6 class="underlabel">million people</h6>
                 </div>
             </div>
@@ -326,6 +326,9 @@
 
                 $('#compare_left_select').selectpicker();
                 $('#compare_right_select').selectpicker();
+
+                // Reload to get values to appear at current default options
+                reload(move_people_slider.value);
             },
             error: function(xhr) {
                 console.log("error")
@@ -341,6 +344,9 @@
 
                 $('#state_move_from_select').selectpicker();
                 $('#state_move_to_select').selectpicker();
+
+                // Reload to get values to appear at current default options
+                reload(move_people_slider.value);
             },
             error: function(xhr) {
                 console.log("error")
@@ -351,7 +357,7 @@
         // Color map
         function reload(move_people_value) {
             $.ajax({
-                    url: "/move_people",
+                    url: "/reload",
                     type: "post",
                     data: $('#move_people_form').serialize(),
                     success: function(response) {
@@ -363,14 +369,49 @@
 
                         // Store
                         states = response;
-                        console.log(response);
 
-                        // Fill out colors
+                        // Fill out colors in the map
                         for (let [key, value] of Object.entries(response.colors)) {
                             $(key).css("fill",value);
                         };
 
+                        // Update the slider again for good measure!
                         $("#move_people_value_span").html(move_people_value);
+
+                        // Update the smallest/biggest
+                        if (response.biggest_vote_frac !== undefined) {
+                            $("#biggest_frac").html(parseFloat(response.biggest_vote_frac).toFixed(2))
+                            $("#biggest_frac_state").html(response.biggest_vote_state)
+                            $("#smallest_frac").html(parseFloat(response.smallest_vote_frac).toFixed(2))
+                            $("#smallest_frac_state").html(response.smallest_vote_state)
+                        }
+
+                        // Comparison
+                        if (response.compare_left_frac !== undefined) {
+                            $("#compare_left_frac").html(parseFloat(response.compare_left_frac).toFixed(2))
+                            $("#compare_left_votes").html(parseInt(response.compare_left_votes))
+                            var pop_left = parseFloat(response.compare_left_pop);
+                            if (pop_left < 10) {
+                                $("#compare_left_pop").html(pop_left.toFixed(2))
+                            } else if (pop_left < 100) {
+                                $("#compare_left_pop").html(pop_left.toFixed(1))
+                            } else {
+                                $("#compare_left_pop").html(parseInt(pop_left))
+                            }
+                        }
+                    
+                        if (response.compare_right_frac !== undefined) {
+                            $("#compare_right_frac").html(parseFloat(response.compare_right_frac).toFixed(2))
+                            $("#compare_right_votes").html(parseInt(response.compare_right_votes))
+                            var pop_right = parseFloat(response.compare_right_pop);
+                            if (pop_right < 10) {
+                                $("#compare_right_pop").html(pop_right.toFixed(2))
+                            } else if (pop_right < 100) {
+                                $("#compare_right_pop").html(pop_right.toFixed(1))
+                            } else {
+                                $("#compare_right_pop").html(parseInt(pop_right))
+                            }
+                        }
                     },
                     error: function(xhr) {
                         console.log("error")
@@ -379,7 +420,16 @@
                 });
         }
 
-        // Submit slider
+        // Submit slider when mouse release
+        move_people_slider.onmouseup = function () {
+            var move_people_value = move_people_slider.value;
+            $("#move_people_value_span").html(move_people_value);
+
+            reload(move_people_value);
+        };
+
+        /*
+        // Alternative: Update slider live
         move_people_slider.addEventListener('input', function () {
 
             var move_people_value = move_people_slider.value;
@@ -397,6 +447,7 @@
             }, 100);
 
         }, false);
+        */
 
         $("path, circle").hover(function() {
             $('#info-box').css('display','block');

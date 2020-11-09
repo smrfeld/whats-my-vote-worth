@@ -70,7 +70,7 @@ def get_label_from_st(st : St) -> str:
 def get_st_from_label(label : str) -> St:
     words = label.split()
     name = '_'.join(words)
-    name.capitalize()
+    name = name.upper()
 
     return St[name]
 

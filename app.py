@@ -45,7 +45,7 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    return render_template('index.html', move_people_value=0)
+    return render_template('index.html')
 
 @app.route('/about', methods=['GET','POST'])
 def about():
@@ -61,19 +61,21 @@ def get_list_of_states() -> str:
     # Options
     ret = ""
     for name in names:
-        ret += '<option>%s</option>' % (name)
+        ret += '<option value="%s">%s</option>' % (name,name)
 
     return ret
 
 @app.route("/get_list_of_states_and_entire_us", methods=["POST"])
 def get_list_of_states_and_entire_us() -> str:
     ret = get_list_of_states()
-    ret = '<option>Entire U.S.</option>' + ret
+    label = "Entire U.S."
+    value = "ENTIRE"
+    ret = ('<option value="%s">%s</option>' % (value, label)) + ret
 
     return ret
 
-@app.route("/move_people", methods=["POST"])
-def move_people() -> Dict[str, str]:
+@app.route("/reload", methods=["POST"])
+def reload() -> Dict[str, str]:
     move_people_value = request.form["move_people_slider_name"]
 
     try:
@@ -82,16 +84,21 @@ def move_people() -> Dict[str, str]:
         pop_actual = app.states.states[St.CALIFORNIA].pop_actual
         pop_move = (move_people_value_int / 100.0) * pop_actual
         app.states.shift_population_from_state(St.CALIFORNIA, pop_move)
-
-        # Assign house seats
-        app.states.assign_house_seats_priority()
-
-        # Check no electoral college votes
-        app.states.calculate_state_vote_fracs()
-    
     except:
         print("Move people value not an integer?")
+    
+    # Assign house seats
+    try:
+        app.states.assign_house_seats_priority()
+    except:
+        print("Could not assign house seats by priority method")
 
+    # Check no electoral college votes
+    try:
+        app.states.calculate_state_vote_fracs()
+    except:
+        print("Could not calculate electoral college votes")
+    
     ret_dict = {}
 
     # Return colors
@@ -103,5 +110,37 @@ def move_people() -> Dict[str, str]:
     ret_dict["vote_fracs"] = {}
     for state in app.states.states.values():
         ret_dict["vote_fracs"]["#"+state.abbrev] = (get_label_from_st(state.st), state.frac_vote)
+
+    # Return biggest/smallest vote frac
+    biggest_frac, biggest_st = app.states.get_biggest_vote_frac()
+    ret_dict["biggest_vote_frac"] = biggest_frac
+    ret_dict["biggest_vote_state"] = get_label_from_st(biggest_st)
+    smallest_frac, smallest_st = app.states.get_smallest_vote_frac()
+    ret_dict["smallest_vote_frac"] = smallest_frac
+    ret_dict["smallest_vote_state"] = get_label_from_st(smallest_st)
+
+    # Return left comparison
+    print(request.form)
+    if "compare_left" in request.form:
+        compare_left = request.form["compare_left"]
+        try:
+            st = get_st_from_label(compare_left)
+            state = app.states.states[st]
+            ret_dict["compare_left_frac"] = state.frac_vote
+            ret_dict["compare_left_votes"] = state.get_no_electoral_votes()
+            ret_dict["compare_left_pop"] = state.pop
+        except:
+            print("Could not convert left selection to state!")
+
+    if "compare_right" in request.form:
+        compare_right = request.form["compare_right"]
+        try:
+            st = get_st_from_label(compare_right)
+            state = app.states.states[st]
+            ret_dict["compare_right_frac"] = state.frac_vote
+            ret_dict["compare_right_votes"] = state.get_no_electoral_votes()
+            ret_dict["compare_right_pop"] = state.pop
+        except:
+            print("Could not convert right selection to state!")
 
     return ret_dict

@@ -1,6 +1,7 @@
 from .state import State, St, harmonic_mean
 import logging
 import numpy as np
+from typing import Tuple
 
 class States:
 
@@ -27,6 +28,18 @@ class States:
     def validate_no_electoral_votes_matches_actual(self):
         no_electoral_votes = self.get_no_electoral_votes()
         assert no_electoral_votes == self.no_electoral_votes_actual
+
+    def get_biggest_vote_frac(self) -> Tuple[int,St]:
+        st_all = [st for st in St]
+        vote_fracs = [self.states[st].frac_vote for st in st_all]
+        idx = np.argmax(vote_fracs)
+        return (vote_fracs[idx], st_all[idx])
+
+    def get_smallest_vote_frac(self) -> Tuple[int,St]:
+        st_all = [st for st in St]
+        vote_fracs = [self.states[st].frac_vote for st in st_all]
+        idx = np.argmin(vote_fracs)
+        return (vote_fracs[idx], st_all[idx])
 
     def get_no_electoral_votes(self) -> int:
         
