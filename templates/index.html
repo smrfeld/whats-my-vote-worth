@@ -528,6 +528,14 @@
             reload_comparison();
         });
 
+        $('#state_move_from_select').on('change', function() {
+            move_people_and_reload(move_people_slider.value);
+        });
+
+        $('#state_move_to_select').on('change', function() {
+            move_people_and_reload(move_people_slider.value);
+        });
+
         /*
         // Alternative: Update slider live
         move_people_slider.addEventListener('input', function () {

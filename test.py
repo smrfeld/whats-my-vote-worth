@@ -16,7 +16,7 @@ states.validate_no_electoral_votes_matches_actual()
 states.calculate_state_vote_fracs()
 
 # Shift population
-states.shift_population_from_state(St.CALIFORNIA, 33)
+states.shift_population_from_state_to_entire_us(St.CALIFORNIA, 33)
 
 # Assign house seats
 states.assign_house_seats_priority()

@@ -84,7 +84,7 @@ def move_people_and_reload() -> Dict[str, str]:
             state = app.states.states[st]
 
             pop_move = state.pop_actual * move_people_value_int / 100.0
-            app.states.shift_population_from_state(st, pop_move)
+            app.states.shift_population_from_state_to_entire_us(st, pop_move)
         except:
             print("Could not move people")
     

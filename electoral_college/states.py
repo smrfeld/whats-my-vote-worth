@@ -88,16 +88,16 @@ class States:
         for state in self.states.values():
             state.pop = state.pop_actual
 
-    def shift_population_from_state(self, st : St, no_leave : float):
-        assert (no_leave <= self.states[st].pop_actual)
+    def shift_population_from_state_to_entire_us(self, st_from : St, no_leave : float):
+        assert (no_leave <= self.states[st_from].pop_actual)
 
         # Remove population from this state
-        self.states[st].pop = self.states[st].pop_actual - no_leave
+        self.states[st_from].pop = self.states[st_from].pop_actual - no_leave
 
         # Calculate population fracs for all the other states
-        total_other_population = sum([state.pop_actual for state in self.states.values() if state.st != st])
+        total_other_population = sum([state.pop_actual for state in self.states.values() if state.st != st_from])
         for st_other, state_other in self.states.items():
-            if st == st_other:
+            if st_from == st_other:
                 continue # skip
 
             frac = state_other.pop_actual / total_other_population
@@ -106,9 +106,57 @@ class States:
             state_other.pop = state_other.pop_actual + frac * no_leave
 
         self.log.debug("----------")
-        self.log.debug("Populations after %s changes population by: %f million people" % (st, no_leave))
+        self.log.debug("Populations after: %f million people move from: %s to entire US" % (no_leave, st_from))
         for state in self.states.values():
             self.log.debug("%20s : %.5f -> %.5f" % (state.st, state.pop_actual, state.pop))
+        self.log.debug("----------")
+
+        # Validate nobody got lost!
+        err = 0.01
+        assert abs(self.get_total_us_population() - self.get_total_us_population_actual()) < err
+
+    def shift_population_from_entire_us_to_state(self, st_to : St, no_leave : float):
+        total_other_population = sum([state.pop_actual for state in self.states.values() if state.st != st_to])
+
+        assert (no_leave <= total_other_population)
+
+        # Remove population from this state
+        self.states[st_to].pop = self.states[st_to].pop_actual + no_leave
+
+        # Calculate population fracs for all the other states
+        for st_other, state_other in self.states.items():
+            if st_to == st_other:
+                continue # skip
+
+            frac = state_other.pop_actual / total_other_population
+
+            # Increment population of other states
+            state_other.pop = state_other.pop_actual - frac * no_leave
+
+        self.log.debug("----------")
+        self.log.debug("Populations after: %f million people move from entire US to: %s" % (no_leave, st_to))
+        for state in self.states.values():
+            self.log.debug("%20s : %.5f -> %.5f" % (state.st, state.pop_actual, state.pop))
+        self.log.debug("----------")
+
+        # Validate nobody got lost!
+        err = 0.01
+        assert abs(self.get_total_us_population() - self.get_total_us_population_actual()) < err
+
+    def shift_population_from_state_to_state(self, st_from : St, st_to : St, no_leave : float):
+        state_from = self.states[st_from]
+        state_to = self.states[st_to]
+
+        assert (no_leave <= state_from.pop_actual)
+
+        # Remove population from this state
+        state_from.pop = state_from.pop_actual - no_leave
+        state_to.pop = state_to.pop_actual + no_leave
+
+        self.log.debug("----------")
+        self.log.debug("Populations after: %f million people move from: %s to: %s" % (no_leave, st_from, st_to))
+        self.log.debug("%20s : %.5f -> %.5f" % (state_from.st, state_from.pop_actual, state_from.pop))
+        self.log.debug("%20s : %.5f -> %.5f" % (state_to.st, state_to.pop_actual, state_to.pop))
         self.log.debug("----------")
 
         # Validate nobody got lost!
