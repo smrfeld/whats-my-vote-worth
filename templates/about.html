@@ -5,13 +5,111 @@
 {% block title %} 
 <h1> About </h1>
 
-Creator: <a href="https://oliver-ernst.com">Oliver K. Ernst</a> (2020) <br />
+<p>
+Created by: <a href="https://oliver-ernst.com">Oliver K. Ernst</a> (2020) <br />
 Source code: <a href="...">GitHub</a>
+</p>
+<br />
 
 <h2> Explanation </h2>
 
-This application allows you to explore what your vote is worth in the electoral college system in the United States.
-It uses <a href="https://www.census.gov/content/dam/Census/library/publications/2011/dec/c2010br-08.pdf">2010 census data</a> for the population of each state.
+<p>
+This application allows you to explore what your vote is worth 
+in the electoral college system in the United States.
+It uses 
+<a href="https://www.census.gov/content/dam/Census/library/publications/2011/dec/c2010br-08.pdf">2010 census data</a>
+for the population of each state.
+</p>
+
+<p>
+For any given population of the states, the app ultimately computes the vote fraction defined as:
+</p>
+<img style="width: 40%" src="{{url_for('static', filename='vote_frac.png')}}"/>
+<br /><br />
+
+<p>
+The first fraction here is the state's share of the electoral college votes:
+</p>
+<img style="width: 20%" src="{{url_for('static', filename='electoral_frac.png')}}"/>
+<br /><br />
+
+<p>
+If there were no electoral college, we can view this 
+as if each person could vote in the electoral college:
+</p>
+<img style="width: 40%" src="{{url_for('static', filename='limit.png')}}"/>
+<br /><br />
+
+<p>
+and the vote fraction would be unity for every state:
+</p>
+<img style="width: 8%" src="{{url_for('static', filename='limit_2.png')}}"/>
+<br /><br />
+
+<p>
+In the electoral college system, each state has different vote fractions.
+With the 2010 census populations, California has the lowest fraction: 0.84809,
+while Wyoming has the highest fraction: 3.03964.
+This means that every vote cast in California is worth c.a. 0.27 the vote of a voter in Wyoming,
+or equivalently every voter in Wyoming has the power of 3.58 Californians in deciding the U.S. presidential race.
+</p>
+
+<p>
+In this application, you can also shift the populations from 
+one state to another to explore how the vote fraction changes.
+For example, as the c.a. 35 million people in California are redistributed to the other states,
+the number of house representatives decreases, such that the electoral college votes decreases,
+such that the vote fraction grows - first to unity, and then beyond.
+</p>
+
+<p>
+The number of electoral college votes for each state is equal to:
+</p>
+<ul>
+    <li>One for each senator (two for every state).</li>
+    <li>One for each <b>voting</b> member of the house of representatives (territories and Washington DC only have <b>non-voting</b> members). 
+        The number of voting representatives is currently fixed at 435.</li>
+    <li>Three for Washington DC.</li>
+</ul>
+<p>
+For any given population distribution among the states, 
+it remains to determine 
+<a href="https://www.everycrsreport.com/reports/R41357.html">how many representatives are 
+assigned to each state.</a>
+This process is not trivial, using a priority list algorithm implemented in this application:
+</p>
+<ul>
+    <li>Every state (excluding Washington DC) is assigned the mandatory minimum of 1 representative. 
+    The total number of representatives assigned is now 50.</li>
+    <li>While the total number of voting representatives assigned is less 435 (fixed limit):</li>
+    <ul>
+        <li>Calculate a priority for each state:</li>
+        <img style="width: 70%" src="{{url_for('static', filename='priority.png')}}"/>
+        <br /><br />
+        <img style="width: 30%" src="{{url_for('static', filename='geometric_mean.png')}}"/>
+        <br /><br />
+        where the number of reps assigned refers to the <b>current</b> number of reps assigned.
+        <li>Assign the next representative to the state with the highest priority.</li>
+    </ul>
+</ul>
+
+<p>
+This calculation is performed every time the population distribution in the application is adjusted.
+From this, the electoral votes and the vote fraction are determined.
+</p>
+
+<br />
+
+<h2> Image source </h2>
+
+<p>
+U.S. map 
+<a href="https://commons.wikimedia.org/wiki/File:Blank_US_Map_(states_only).svg">source</a>;
+released under 
+<a href="https://en.wikipedia.org/wiki/en:Creative_Commons">Creative Commons Attribution-Share Alike 3.0 Unported.</a>
+</p>
+
+<br />
 
 <h2> License </h2>
 

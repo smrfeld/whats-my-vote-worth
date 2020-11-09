@@ -4,7 +4,7 @@
     
 {% block title %} 
 <h1> What's my vote worth? </h1> 
-<h4 style="color: #949494;"> Your state's voting power in the electoral college </h4> 
+<h4 style="color: #949494;"> Your state's voting power in the electoral college. </h4> 
 
 <div class="row">
 
@@ -21,14 +21,14 @@
 
         <div class="row align-items-end">
             <div class="col-sm-6">
-                <h3>Biggest vote fraction*:</h3>
+                <h6>Biggest vote fraction*:</h6>
                 <h1>0.1</h1>
-                <h7>California</h7>
+                <h6>California</h6>
             </div>
             <div class="col-sm-6">
-                <h3>Smallest vote fraction*:</h3>
+                <h6>Smallest vote fraction*:</h6>
                 <h1>18</h1>
-                <h7>Wyoming</h7>
+                <h6>Wyoming</h6>
             </div>
         </div>
         <br />
@@ -40,6 +40,8 @@
                     i.e. if there were no electoral college, 
                     i.e. 1/(population of the United States) ~ 1/(309 million). 
                     See <a href="about">about</a> for more information.</p>
+                <p style="color: #B3B3B3; font-size: 12px;">Total U.S. Population (fixed): 309 million people</p>
+                <p style="color: #B3B3B3; font-size: 12px;">No. electoral votes (fixed): 538</p>
             </div>
         </div>
 
@@ -54,80 +56,98 @@
 
             <hr/>
 
-            <!-- State choose -->
-            <div class="row align-items-center">
-                <div class="col-sm-3">
-                    <h3>State:</h3>
-                </div>
-                <div class="col-sm-9">
-                    <select name="state_detail" id="state_detail_select" data-live-search="true"></select>
-                </div>
-            </div>
-
-            <!-- State detail -->
-            <br />
-            <div class="row align-items-end">
-                <div class="col-sm-4">
-                    <h1>0.1</h1>
-                    <h7>vote fraction*</h7>
-                </div>
-                <div class="col-sm-4">
-                    <h4>18</h4>
-                    <h7>electoral votes</h7>
-                </div>
-                <div class="col-sm-4">
-                    <h4>30</h4>
-                    <h7>million people</h7>
-                </div>
-            </div>
-            <br />
-
-            <h7>US Population (fixed): 309 million people</h7> <br />
-            <h7>No. electoral votes (fixed): 538</h7> <br /> <br />
-
-            <hr/>
-
-            <h3>Move population:</h3>
+            <!-- Compare states -->
+            <h3>Compare states:</h3>
 
             <div class="row">
                 <div class="col-sm-6">
-                    <h7>From:</h7><br />
-                    <select name="state_move_from" id="state_move_from_select" data-live-search="true"></select>
+                    <select name="compare_left" id="compare_left_select" data-live-search="true"></select>
                     
                     <br /><br />
                     <div class="row align-items-end">
                         <div class="col-sm-4">
-                            <h4>0.1</h4>
-                            <h7>vote fraction*</h7>
+                            <h1>0.1</h1>
+                            <h6>vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h4>18</h4>
-                            <h7>electoral votes</h7>
+                            <h5>18</h5>
+                            <h6>electoral votes</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h4>30</h4>
-                            <h7>million people</h7>
+                            <h5>30</h5>
+                            <h6>million people</h6>
                         </div>
                     </div>
 
                 </div>
                 <div class="col-sm-6">
-                    <h7>To:</h7><br />
+                    <select name="compare_right" id="compare_right_select" data-live-search="true"></select>
+
+                    <br /><br />
+                    <div class="row align-items-end">
+                        <div class="col-sm-4">
+                            <h1>0.1</h1>
+                            <h6>vote fraction*</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>18</h5>
+                            <h6>electoral votes</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>30</h5>
+                            <h6>million people</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <h4>A vote in Wyoming is worth <span style="color: blue;">3.32</span> as much as a vote in California.</h4>
+
+            <hr/>
+
+            <!-- Move population -->
+            <h3>Move population:</h3>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <h6>From:</h6>
+                    <select name="state_move_from" id="state_move_from_select" data-live-search="true"></select>
+                    
+                    <br /><br />
+                    <div class="row align-items-end">
+                        <div class="col-sm-4">
+                            <h1>0.1</h1>
+                            <h6>vote fraction*</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>18</h5>
+                            <h6>electoral votes</h6>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>30</h5>
+                            <h6>million people</h6>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <h6>To:</h6>
                     <select name="state_move_to" id="state_move_to_select" data-live-search="true"></select>
 
                     <br /><br />
                     <div class="row align-items-end">
                         <div class="col-sm-4">
-                            <h4>0.1</h4>
-                            <h7>vote fraction*</h7>
+                            <h1>0.1</h1>
+                            <h6>vote fraction*</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h4>18</h4>
-                            <h7>electoral votes</h7>
+                            <h5>18</h5>
+                            <h6>electoral votes</h6>
                         </div>
                         <div class="col-sm-4">
-                            <h4>30</h4>
-                            <h7>million people</h7>
+                            <h5>30</h5>
+                            <h6>million people</h6>
                         </div>
                     </div>
                 </div>
@@ -136,18 +156,18 @@
 
             <div class="row align-items-start">
                 <div class="col-sm-8">
-                    <h7>Percentage of people to move:</h7>
+                    <h6>Percentage of people to move:</h6>
                     <div class="slidecontainer">
-                        <input type="range" min="0" max="100" value={{move_people_value}} class="slider" id="move_people_slider" name="move_people_slider_name">            
+                        <input type="range" min="0" max="99" value={{move_people_value}} class="slider" id="move_people_slider" name="move_people_slider_name">            
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <h3><span id="move_people_value_span"></span></h3>
-                    <h7>percent</h7>
+                    <h6>percent</h6>
                 </div>
                 <div class="col-sm-2">
                     <h3>0</h3>
-                    <h7>million people</h7>
+                    <h6>million people</h6>
                 </div>
             </div>
 
@@ -179,11 +199,27 @@
             url: "/get_list_of_states",
             type: "post",
             success: function(response) {
-                $("#state_detail_select").html(response);
+                $("#compare_left_select").html(response);
+                $("#compare_right_select").html(response);
+
+                $('#compare_left_select').selectpicker();
+                $('#compare_right_select').selectpicker();
+            },
+            error: function(xhr) {
+                console.log("error")
+                //Do Something to handle error
+            }
+        });
+        $.ajax({
+            url: "/get_list_of_states_and_entire_us",
+            type: "post",
+            success: function(response) {
+                console.log(response);
                 $("#state_move_from_select").html(response);
                 $("#state_move_to_select").html(response);
 
-                $('select').selectpicker();
+                $('#state_move_from_select').selectpicker();
+                $('#state_move_to_select').selectpicker();
             },
             error: function(xhr) {
                 console.log("error")

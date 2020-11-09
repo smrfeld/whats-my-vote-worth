@@ -62,6 +62,14 @@ def get_list_of_states() -> str:
 
     return ret
 
+@app.route("/get_list_of_states_and_entire_us", methods=["POST"])
+def get_list_of_states_and_entire_us() -> str:
+    ret = get_list_of_states()
+    ret = '<option>Entire U.S.</option>' + ret
+    print(ret)
+
+    return ret
+
 @app.route("/move_people", methods=["POST"])
 def move_people() -> Dict[str, str]:
     # print(request.args)
