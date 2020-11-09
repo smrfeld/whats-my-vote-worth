@@ -513,8 +513,8 @@
         });
 
         $(document).mousemove(function(e) {
-            $('#info-box').css('top',e.pageY-125);
-            $('#info-box').css('left',e.pageX-50);
+            $('#info-box').css('top',e.offsetY+20);
+            $('#info-box').css('left',e.offsetX+20);
         }).mouseover();
 
         // Trigger map by "clicking" it
