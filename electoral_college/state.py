@@ -63,7 +63,6 @@ def get_label_from_st(st : St) -> str:
     
     # Capitalize west virginia -> West Virginia
     words = name.split('_')
-    print(words)
     name = ' '.join([n.capitalize() if n != "of" else n for n in words])
 
     return name

@@ -13,6 +13,9 @@ class StatesFlask(Flask):
 
 app = StatesFlask(__name__)
 
+# Logging
+app.states.log.setLevel(logging.ERROR)
+
 def get_hex(red : int, green : int, blue : int) -> str:
     return '#%02x%02x%02x' % (red, green, blue)
 
@@ -66,17 +69,12 @@ def get_list_of_states() -> str:
 def get_list_of_states_and_entire_us() -> str:
     ret = get_list_of_states()
     ret = '<option>Entire U.S.</option>' + ret
-    print(ret)
 
     return ret
 
 @app.route("/move_people", methods=["POST"])
 def move_people() -> Dict[str, str]:
-    # print(request.args)
-    # move_people_value = request.args.get('move_people_value')
-
     move_people_value = request.form["move_people_slider_name"]
-    print(move_people_value)
 
     try:
         move_people_value_int = int(move_people_value)
@@ -95,8 +93,15 @@ def move_people() -> Dict[str, str]:
         print("Move people value not an integer?")
 
     ret_dict = {}
-    for state in app.states.states.values():
-        ret_dict["#"+state.abbrev] = get_hex_from_vote_frac(state.frac_vote)
 
-    print(ret_dict)
+    # Return colors
+    ret_dict["colors"] = {}
+    for state in app.states.states.values():
+        ret_dict["colors"]["#"+state.abbrev] = get_hex_from_vote_frac(state.frac_vote)
+
+    # Return vote frac
+    ret_dict["vote_fracs"] = {}
+    for state in app.states.states.values():
+        ret_dict["vote_fracs"]["#"+state.abbrev] = (get_label_from_st(state.st), state.frac_vote)
+
     return ret_dict

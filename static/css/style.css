@@ -28,8 +28,49 @@
     cursor: pointer;
 }
 
+path:hover, circle:hover {
+    stroke: black !important;
+    stroke-width:5px;
+    stroke-linejoin: round;
+    cursor: pointer;
+}
+
+#info-box {
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    background-color: #ffffff;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: arial;
+}  
+
+.footnote {
+    color: #B3B3B3; 
+    font-size: 12px;
+}
+
+.subtitle {
+    color: #949494;
+}
+
+.underlabel {
+    color: #c4c4c4;
+}
+
+.overlabel {
+    color: #9c9c9c;
+}
+
+h5 {
+    color: #9c9c9c;
+}
+
 h6 {
-    color: #B3B3B3;
+    color: #c4c4c4;
     font-size: 14px;
 }
 
