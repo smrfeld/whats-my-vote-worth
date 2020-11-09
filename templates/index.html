@@ -226,7 +226,22 @@
             </div>
             <br />
 
+            <div class="row">
+                <div class="col-sm-5">
+                    <h5 style="text-align: right;">A vote in <span id="compare_first">...</span> is worth</h5>
+                </div>
+                <div class="col-sm-2">
+                    <h1><span id="compare_rel" style="color: blue;">...</span></h1>
+                </div>
+                <div class="col-sm-5">
+                    <h5>as much as a vote in <span id="compare_second">...</span>.</h5>
+                </div>
+            </div>
+
+            <!-- Old style -->
+            <!--
             <h4>A vote in <span id="compare_first">...</span> is worth <span id="compare_rel" style="color: blue;">...</span> as much as a vote in <span id="compare_second">...</span>.</h4>
+            -->
 
             <hr/>
 
@@ -328,7 +343,7 @@
                 $('#compare_right_select').selectpicker();
 
                 // Reload to get values to appear at current default options
-                reload(move_people_slider.value);
+                move_people_and_reload(move_people_slider.value);
             },
             error: function(xhr) {
                 console.log("error")
@@ -346,7 +361,7 @@
                 $('#state_move_to_select').selectpicker();
 
                 // Reload to get values to appear at current default options
-                reload(move_people_slider.value);
+                move_people_and_reload(move_people_slider.value);
             },
             error: function(xhr) {
                 console.log("error")
@@ -354,10 +369,122 @@
             }
         });
 
-        // Color map
-        function reload(move_people_value) {
+        // Update UI for comparison
+        function update_UI_comparison(response) {
+            // Comparison
+            if (response.compare_left_frac !== undefined) {
+                $("#compare_left_frac").html(parseFloat(response.compare_left_frac).toFixed(2))
+                $("#compare_left_votes").html(parseInt(response.compare_left_votes))
+                var pop_left = parseFloat(response.compare_left_pop);
+                if (pop_left < 10) {
+                    $("#compare_left_pop").html(pop_left.toFixed(2))
+                } else if (pop_left < 100) {
+                    $("#compare_left_pop").html(pop_left.toFixed(1))
+                } else {
+                    $("#compare_left_pop").html(parseInt(pop_left))
+                }
+            }
+        
+            if (response.compare_right_frac !== undefined) {
+                $("#compare_right_frac").html(parseFloat(response.compare_right_frac).toFixed(2))
+                $("#compare_right_votes").html(parseInt(response.compare_right_votes))
+                var pop_right = parseFloat(response.compare_right_pop);
+                if (pop_right < 10) {
+                    $("#compare_right_pop").html(pop_right.toFixed(2))
+                } else if (pop_right < 100) {
+                    $("#compare_right_pop").html(pop_right.toFixed(1))
+                } else {
+                    $("#compare_right_pop").html(parseInt(pop_right))
+                }
+            }
+
+            if ((response.compare_left_state !== undefined) 
+                && (response.compare_right_state !== undefined) 
+                && (response.compare_rel !== undefined)) {
+                $("#compare_first").html(response.compare_left_state)
+                $("#compare_second").html(response.compare_right_state)
+                $("#compare_rel").html(parseFloat(response.compare_rel).toFixed(1) + "x")
+            }
+        }
+
+        function update_UI_map(response) {
+
+            // Fill out colors in the map
+            if (response.colors !== undefined) {
+                for (let [key, value] of Object.entries(response.colors)) {
+                    $(key).css("fill",value);
+                };
+            }
+
+            // Update the smallest/biggest
+            if (response.biggest_vote_frac !== undefined) {
+                $("#biggest_frac").html(parseFloat(response.biggest_vote_frac).toFixed(2))
+                $("#biggest_frac_state").html(response.biggest_vote_state)
+                $("#smallest_frac").html(parseFloat(response.smallest_vote_frac).toFixed(2))
+                $("#smallest_frac_state").html(response.smallest_vote_state)
+            }
+
+            // Move left
+            if (response.move_left_frac !== undefined) {
+                $("#move_left_frac").html(parseFloat(response.move_left_frac).toFixed(2))
+                $("#move_left_vote").html(parseInt(response.move_left_vote))
+                var pop_left = parseFloat(response.move_left_pop);
+                if (pop_left < 10) {
+                    $("#move_left_pop").html(pop_left.toFixed(2))
+                } else if (pop_left < 100) {
+                    $("#move_left_pop").html(pop_left.toFixed(1))
+                } else {
+                    $("#move_left_pop").html(parseInt(pop_left))
+                }
+            }
+
+            // Move right
+            if (response.move_right_frac !== undefined) {
+                $("#move_right_frac").html(parseFloat(response.move_right_frac).toFixed(2))
+                $("#move_right_vote").html(parseInt(response.move_right_vote))
+                var pop_right = parseFloat(response.move_right_pop);
+                if (pop_right < 10) {
+                    $("#move_right_pop").html(pop_right.toFixed(2))
+                } else if (pop_right < 100) {
+                    $("#move_right_pop").html(pop_right.toFixed(1))
+                } else {
+                    $("#move_right_pop").html(parseInt(pop_right))
+                }
+            }
+
+            // Population moved
+            if (response.pop_moved !== undefined) {
+                var pop_moved = parseFloat(response.pop_moved);
+                if (pop_moved < 10) {
+                    $("#move_people_value_pop").html(pop_moved.toFixed(2))
+                } else if (pop_moved < 100) {
+                    $("#move_people_value_pop").html(pop_moved.toFixed(1))
+                } else {
+                    $("#move_people_value_pop").html(parseInt(pop_moved))
+                }
+            }
+        }
+
+        // Reload comparison
+        function reload_comparison() {
             $.ajax({
-                    url: "/reload",
+                    url: "/compare",
+                    type: "post",
+                    data: $('#move_people_form').serialize(),
+                    success: function(response) {
+                        update_UI_comparison(response);
+                    },
+                    error: function(xhr) {
+                        console.log("error")
+                        //Do Something to handle error
+                    }
+                });
+        }
+
+        // Color map
+        function move_people_and_reload(move_people_value) {
+            $.ajax({
+                    url: "/move_people_and_reload",
                     type: "post",
                     data: $('#move_people_form').serialize(),
                     success: function(response) {
@@ -370,48 +497,12 @@
                         // Store
                         states = response;
 
-                        // Fill out colors in the map
-                        for (let [key, value] of Object.entries(response.colors)) {
-                            $(key).css("fill",value);
-                        };
-
                         // Update the slider again for good measure!
                         $("#move_people_value_span").html(move_people_value);
 
-                        // Update the smallest/biggest
-                        if (response.biggest_vote_frac !== undefined) {
-                            $("#biggest_frac").html(parseFloat(response.biggest_vote_frac).toFixed(2))
-                            $("#biggest_frac_state").html(response.biggest_vote_state)
-                            $("#smallest_frac").html(parseFloat(response.smallest_vote_frac).toFixed(2))
-                            $("#smallest_frac_state").html(response.smallest_vote_state)
-                        }
-
-                        // Comparison
-                        if (response.compare_left_frac !== undefined) {
-                            $("#compare_left_frac").html(parseFloat(response.compare_left_frac).toFixed(2))
-                            $("#compare_left_votes").html(parseInt(response.compare_left_votes))
-                            var pop_left = parseFloat(response.compare_left_pop);
-                            if (pop_left < 10) {
-                                $("#compare_left_pop").html(pop_left.toFixed(2))
-                            } else if (pop_left < 100) {
-                                $("#compare_left_pop").html(pop_left.toFixed(1))
-                            } else {
-                                $("#compare_left_pop").html(parseInt(pop_left))
-                            }
-                        }
-                    
-                        if (response.compare_right_frac !== undefined) {
-                            $("#compare_right_frac").html(parseFloat(response.compare_right_frac).toFixed(2))
-                            $("#compare_right_votes").html(parseInt(response.compare_right_votes))
-                            var pop_right = parseFloat(response.compare_right_pop);
-                            if (pop_right < 10) {
-                                $("#compare_right_pop").html(pop_right.toFixed(2))
-                            } else if (pop_right < 100) {
-                                $("#compare_right_pop").html(pop_right.toFixed(1))
-                            } else {
-                                $("#compare_right_pop").html(parseInt(pop_right))
-                            }
-                        }
+                        // UI
+                        update_UI_comparison(response);
+                        update_UI_map(response);
                     },
                     error: function(xhr) {
                         console.log("error")
@@ -425,8 +516,17 @@
             var move_people_value = move_people_slider.value;
             $("#move_people_value_span").html(move_people_value);
 
-            reload(move_people_value);
+            move_people_and_reload(move_people_value);
         };
+
+        // Update UI when changing state comparison
+        $('#compare_left_select').on('change', function() {
+            reload_comparison();
+        });
+
+        $('#compare_right_select').on('change', function() {
+            reload_comparison();
+        });
 
         /*
         // Alternative: Update slider live
@@ -443,7 +543,7 @@
                     return;
                 }
 
-                reload(move_people_value);
+                move_people_and_reload(move_people_value);
             }, 100);
 
         }, false);
@@ -466,7 +566,7 @@
         }).mouseover();
 
         // Trigger map by "clicking" it
-        reload(0);
+        move_people_and_reload(0);
     });
 
 </script>
