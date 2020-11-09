@@ -74,19 +74,59 @@ def get_list_of_states_and_entire_us() -> str:
 
     return ret
 
+def fill_out_ret_dict_from_label(ret_dict : Dict[str,str], base_str : str, label : str):
+    if label == "ENTIRE":
+        fill_out_ret_dict_from_entire_us(ret_dict, base_str)
+    else:
+        try:
+            st = get_st_from_label(label)
+            fill_out_ret_dict_from_state(ret_dict, base_str, st)
+        except:
+            print("Error filling out ret_dict: %s from label: %s" % (base_str,label))
+
+def fill_out_ret_dict_from_state(ret_dict : Dict[str,str], base_str : str, st : St):
+    state = app.states.states[st]
+    ret_dict[base_str + "state"] = get_label_from_st(st)
+    ret_dict[base_str + "frac"] = state.get_frac_vote_str()
+    ret_dict[base_str + "vote"] = state.get_no_electoral_votes_str()
+    ret_dict[base_str + "pop"] = state.get_pop_str()
+
+def fill_out_ret_dict_from_entire_us(ret_dict : Dict[str,str], base_str : str):
+    ret_dict[base_str + "state"] = "Entire U.S."
+    ret_dict[base_str + "frac"] = "-"
+    ret_dict[base_str + "vote"] = "%d" % app.states.get_no_electoral_votes()
+    ret_dict[base_str + "pop"] = convert_pop_to_str(app.states.get_total_us_population_actual())
+
 @app.route("/move_people_and_reload", methods=["POST"])
 def move_people_and_reload() -> Dict[str, str]:
 
-    if "state_move_from" in request.form and "move_people_slider_name" in request.form:
-        try:
-            move_people_value_int = int(request.form["move_people_slider_name"])
-            st = get_st_from_label(request.form["state_move_from"])
-            state = app.states.states[st]
+    if "state_move_from" in request.form and "state_move_to" in request.form and "move_people_slider_name" in request.form:
+        val_from = request.form["state_move_from"]
+        val_to = request.form["state_move_to"]
+        val_percent = request.form["move_people_slider_name"]
 
-            pop_move = state.pop_actual * move_people_value_int / 100.0
-            app.states.shift_population_from_state_to_entire_us(st, pop_move)
-        except:
-            print("Could not move people")
+        if val_from == val_to:
+            # No need to shift!
+            pass
+        else:
+            try:
+                move_people_value_int = int(val_percent)
+
+                if val_from == "ENTIRE":
+                    st_to = get_st_from_label(val_to)
+                    app.states.shift_population_from_entire_us_to_state(st_to, move_people_value_int)
+
+                elif val_to == "ENTIRE":
+                    st_from = get_st_from_label(val_from)
+                    app.states.shift_population_from_state_to_entire_us(st_from, move_people_value_int)
+
+                else:
+                    st_from = get_st_from_label(val_from)
+                    st_to = get_st_from_label(val_to)
+                    app.states.shift_population_from_state_to_state(st_from, st_to, move_people_value_int)
+                
+            except:
+                print("Could not move people")
     
     # Assign house seats
     try:
@@ -114,10 +154,10 @@ def move_people_and_reload() -> Dict[str, str]:
 
     # Return biggest/smallest vote frac
     biggest_frac, biggest_st = app.states.get_biggest_vote_frac()
-    ret_dict["biggest_vote_frac"] = biggest_frac
+    ret_dict["biggest_vote_frac"] = convert_frac_vote_to_str(biggest_frac)
     ret_dict["biggest_vote_state"] = get_label_from_st(biggest_st)
     smallest_frac, smallest_st = app.states.get_smallest_vote_frac()
-    ret_dict["smallest_vote_frac"] = smallest_frac
+    ret_dict["smallest_vote_frac"] = convert_frac_vote_to_str(smallest_frac)
     ret_dict["smallest_vote_state"] = get_label_from_st(smallest_st)
 
     # Return left/right comparison
@@ -126,35 +166,25 @@ def move_people_and_reload() -> Dict[str, str]:
 
     # Return move ones
     if "state_move_from" in request.form:
-        state_move_from = request.form["state_move_from"]
-        try:
-            st = get_st_from_label(state_move_from)
-            state = app.states.states[st]
-            ret_dict["move_left_frac"] = state.frac_vote
-            ret_dict["move_left_vote"] = state.get_no_electoral_votes()
-            ret_dict["move_left_pop"] = state.pop
-
-            # Update no people to move
-            if "move_people_slider_name" in request.form:
-                try:
-                    move_people_value_int = int(request.form["move_people_slider_name"])
-                    ret_dict["pop_moved"] = state.pop_actual * move_people_value_int / 100.0
-                except:
-                    print("Could not get percent to move")
-
-        except:
-            print("Could not convert left move to state!")
+        fill_out_ret_dict_from_label(ret_dict, "move_left_", request.form["state_move_from"])
 
     if "state_move_to" in request.form:
-        state_move_to = request.form["state_move_to"]
+        fill_out_ret_dict_from_label(ret_dict, "move_right_", request.form["state_move_to"])
+
+    if "state_move_from" in request.form and "move_people_slider_name" in request.form:
         try:
-            st = get_st_from_label(state_move_to)
-            state = app.states.states[st]
-            ret_dict["move_right_frac"] = state.frac_vote
-            ret_dict["move_right_vote"] = state.get_no_electoral_votes()
-            ret_dict["move_right_pop"] = state.pop
+            move_people_value_int = int(request.form["move_people_slider_name"])
+
+            if request.form["state_move_from"] == "ENTIRE":
+                pop_move = app.states.get_total_us_population_actual()
+            else:
+                st = get_st_from_label(request.form["state_move_from"])
+                state = app.states.states[st]
+                pop_move = state.pop_actual
+        
+            ret_dict["pop_moved"] = convert_pop_to_str(pop_move * move_people_value_int / 100.0)
         except:
-            print("Could not convert right move to state!")
+            print("Could not get percent to move")
 
     return ret_dict
 
@@ -165,31 +195,23 @@ def compare() -> Dict[str, str]:
 
     # Left comparison
     if "compare_left" in request.form:
-        compare_left = request.form["compare_left"]
-        try:
-            st = get_st_from_label(compare_left)
-            state = app.states.states[st]
-            ret_dict["compare_left_state"] = compare_left
-            ret_dict["compare_left_frac"] = state.frac_vote
-            ret_dict["compare_left_votes"] = state.get_no_electoral_votes()
-            ret_dict["compare_left_pop"] = state.pop
-        except:
-            print("Could not convert left selection to state!")
+        fill_out_ret_dict_from_label(ret_dict, "compare_left_", request.form["compare_left"])
 
     # Right comparison
     if "compare_right" in request.form:
+        fill_out_ret_dict_from_label(ret_dict, "compare_right_", request.form["compare_right"])
+
+    # Relative
+    if "compare_left" in request.form and "compare_right" in request.form:
+        compare_left = request.form["compare_left"]
         compare_right = request.form["compare_right"]
         try:
-            st = get_st_from_label(compare_right)
-            state = app.states.states[st]
-            ret_dict["compare_right_state"] = compare_right
-            ret_dict["compare_right_frac"] = state.frac_vote
-            ret_dict["compare_right_votes"] = state.get_no_electoral_votes()
-            ret_dict["compare_right_pop"] = state.pop
+            st_left = get_st_from_label(compare_left)
+            st_right = get_st_from_label(compare_right)
+            state_left = app.states.states[st_left]
+            state_right = app.states.states[st_right]
+            ret_dict["compare_rel"] = "%.1fx" % (state_left.frac_vote / state_right.frac_vote)
         except:
-            print("Could not convert right selection to state!")
-
-    if "compare_left_frac" in ret_dict and "compare_right_frac" in ret_dict:
-        ret_dict["compare_rel"] = ret_dict["compare_left_frac"] / ret_dict["compare_right_frac"]
+            print("Could not convert get comparison!")
 
     return ret_dict

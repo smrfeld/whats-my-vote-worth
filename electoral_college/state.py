@@ -83,6 +83,17 @@ def harmonic_mean(n : float, m : float) -> float:
 def geometric_mean(n : float, m : float) -> float:
     return np.sqrt(n * m)
 
+def convert_frac_vote_to_str(frac_vote : float) -> str:
+    return "%.2f" % frac_vote
+
+def convert_pop_to_str(pop : float) -> str:
+    if pop < 10:
+        return "%.2f" % pop
+    elif pop < 100:
+        return "%.1f" % pop
+    else:
+        return "%d" % int(pop)
+
 class State:
     
     def __init__(self, 
@@ -109,7 +120,16 @@ class State:
         self.frac_vote : float = 0.0
         self.frac_electoral : float = 0.0
 
-    def get_no_electoral_votes(self):
+    def get_no_electoral_votes_str(self) -> str:
+        return "%d" % self.get_no_electoral_votes()
+    
+    def get_frac_vote_str(self) -> str:
+        return convert_frac_vote_to_str(self.frac_vote)
+
+    def get_pop_str(self) -> str:
+        return convert_pop_to_str(self.pop)
+
+    def get_no_electoral_votes(self) -> int:
         return self.no_voting_reps_assigned + self.no_nonvoting_reps_assigned + 2
 
     def get_priority(self):

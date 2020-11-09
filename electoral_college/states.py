@@ -88,11 +88,16 @@ class States:
         for state in self.states.values():
             state.pop = state.pop_actual
 
-    def shift_population_from_state_to_entire_us(self, st_from : St, no_leave : float):
-        assert (no_leave <= self.states[st_from].pop_actual)
+    def shift_population_from_state_to_entire_us(self, st_from : St, percent : int):
+        assert (percent >= 0)
+        assert (percent <= 100)
+
+        # No people to remove
+        state_from = self.states[st_from]
+        no_leave = state_from.pop_actual * percent / 100.0
 
         # Remove population from this state
-        self.states[st_from].pop = self.states[st_from].pop_actual - no_leave
+        state_from.pop = state_from.pop_actual - no_leave
 
         # Calculate population fracs for all the other states
         total_other_population = sum([state.pop_actual for state in self.states.values() if state.st != st_from])
@@ -115,13 +120,16 @@ class States:
         err = 0.01
         assert abs(self.get_total_us_population() - self.get_total_us_population_actual()) < err
 
-    def shift_population_from_entire_us_to_state(self, st_to : St, no_leave : float):
+    def shift_population_from_entire_us_to_state(self, st_to : St, percent : int):
+        assert (percent >= 0)
+        assert (percent <= 100)
+
         total_other_population = sum([state.pop_actual for state in self.states.values() if state.st != st_to])
+        no_leave = total_other_population * percent / 100.0
 
-        assert (no_leave <= total_other_population)
-
-        # Remove population from this state
-        self.states[st_to].pop = self.states[st_to].pop_actual + no_leave
+        # Add population to this state
+        state_to = self.states[st_to]
+        state_to.pop = state_to.pop_actual + no_leave
 
         # Calculate population fracs for all the other states
         for st_other, state_other in self.states.items():
@@ -143,11 +151,15 @@ class States:
         err = 0.01
         assert abs(self.get_total_us_population() - self.get_total_us_population_actual()) < err
 
-    def shift_population_from_state_to_state(self, st_from : St, st_to : St, no_leave : float):
+    def shift_population_from_state_to_state(self, st_from : St, st_to : St, percent : int):
+        assert (percent >= 0)
+        assert (percent <= 100)
+
         state_from = self.states[st_from]
         state_to = self.states[st_to]
 
-        assert (no_leave <= state_from.pop_actual)
+        # No people to remove
+        no_leave = state_from.pop_actual * percent / 100.0
 
         # Remove population from this state
         state_from.pop = state_from.pop_actual - no_leave
