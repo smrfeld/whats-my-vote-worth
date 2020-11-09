@@ -85,6 +85,12 @@ svg {
     display: block; /* remove extra space below image */
 }
 
+img {
+    max-width: 100%;
+    max-height: auto;
+    display: block; /* remove extra space below image */
+}
+
 #ex1Slider .slider-selection {
 	background: #BABABA;
 }
