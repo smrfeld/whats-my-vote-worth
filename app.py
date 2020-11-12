@@ -45,6 +45,22 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 
 @app.route('/', methods=['GET','POST'])
 def index():
+
+    # Reset population
+    app.states.reset_state_populations_to_actual()
+
+    # Assign house seats
+    try:
+        app.states.assign_house_seats_priority()
+    except:
+        print("Could not assign house seats by priority method")
+
+    # Check no electoral college votes
+    try:
+        app.states.calculate_state_vote_fracs()
+    except:
+        print("Could not calculate electoral college votes")
+    
     return render_template('index.html')
 
 @app.route('/about', methods=['GET','POST'])
