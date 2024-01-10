@@ -2,12 +2,26 @@
 
 Your state's voting power in the electoral college.
 
-[You can find the application hosted on Heroku here.](https://whats-my-vote-worth.herokuapp.com).
+[View the live application here](http://whats-my-vote-worth.oliver-ernst.com)
 
 ## About
 
 Created by: [Oliver K. Ernst](https://oliver-ernst.com) (2020)
 Source code: [GitHub](https://github.com/smrfeld/whats-my-vote-worth)
+
+## Running locally
+
+Install requirements:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the application:
+
+```bash
+flask run
+```
 
 ## Explanation
 
