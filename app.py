@@ -20,6 +20,12 @@ class HouseFlask(Flask):
             pop_type=hr.PopType.APPORTIONMENT
             )
 
+    def reset(self):
+        self.house = hr.HouseOfReps(
+            year=hr.Year.YR2020, 
+            pop_type=hr.PopType.APPORTIONMENT
+            )
+
     def assign_house_seats_priority(self):
         self.house.assign_house_seats_priority()
 
@@ -58,6 +64,7 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 def index():
     try:
         # Reset & assign house seats
+        app.reset()
         app.assign_house_seats_priority()
     except:
         print("Could not assign house seats by priority method")    
