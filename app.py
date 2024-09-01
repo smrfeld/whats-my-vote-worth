@@ -1,21 +1,26 @@
-from electoral_college import *
-from flask import Flask, flash, render_template, request, redirect, jsonify, url_for
+import houseofreps as hr
+from flask import Flask, render_template, request
 from colour import Color
 
 from typing import Dict
 
-class StatesFlask(Flask):
+class HouseFlask(Flask):
     
     def __init__(self, name : str):
         super().__init__(name)
 
-        self.states = States()
+        self.house = hr.HouseOfReps(
+            year=hr.Year.YR2020, 
+            pop_type=hr.PopType.APPORTIONMENT
+            )
 
-app = StatesFlask(__name__)
+    def assign_house_seats_priority(self):
+        self.house.assign_house_seats_priority()
+
+
+app = HouseFlask(__name__)
 
 # Logging
-app.states.log.setLevel(logging.ERROR)
-
 def get_hex(red : int, green : int, blue : int) -> str:
     return '#%02x%02x%02x' % (red, green, blue)
 
@@ -45,22 +50,11 @@ def get_hex_from_vote_frac(frac_vote : float) -> str:
 
 @app.route('/', methods=['GET','POST'])
 def index():
-
-    # Reset population
-    app.states.reset_state_populations_to_actual()
-
-    # Assign house seats
     try:
-        app.states.assign_house_seats_priority()
+        # Reset & assign house seats
+        app.assign_house_seats_priority()
     except:
-        print("Could not assign house seats by priority method")
-
-    # Check no electoral college votes
-    try:
-        app.states.calculate_state_vote_fracs()
-    except:
-        print("Could not calculate electoral college votes")
-    
+        print("Could not assign house seats by priority method")    
     return render_template('index.html')
 
 @app.route('/about', methods=['GET','POST'])
@@ -71,8 +65,7 @@ def about():
 def get_list_of_states() -> str:
 
     # Sort states
-    names = [get_label_from_st(st) for st in St]
-    names.sort()
+    names = sorted([st.name for st in hr.St])
 
     # Options
     ret = ""
@@ -95,17 +88,30 @@ def fill_out_ret_dict_from_label(ret_dict : Dict[str,str], base_str : str, label
         fill_out_ret_dict_from_entire_us(ret_dict, base_str)
     else:
         try:
-            st = get_st_from_label(label)
+            st = hr.St.from_name(label)
             fill_out_ret_dict_from_state(ret_dict, base_str, st)
         except:
             print("Error filling out ret_dict: %s from label: %s" % (base_str,label))
 
-def fill_out_ret_dict_from_state(ret_dict : Dict[str,str], base_str : str, st : St):
-    state = app.states.states[st]
-    ret_dict[base_str + "state"] = get_label_from_st(st)
-    ret_dict[base_str + "frac"] = state.get_frac_vote_str()
-    ret_dict[base_str + "vote"] = state.get_no_electoral_votes_str()
-    ret_dict[base_str + "pop"] = state.get_pop_str()
+def convert_frac_vote_to_str(frac_vote : float) -> str:
+    return "%.2f" % frac_vote
+
+def convert_pop_to_str(pop : float) -> str:
+    if pop < 10:
+        return "%.2f" % pop
+    elif pop < 100:
+        return "%.1f" % pop
+    else:
+        return "%d" % int(pop)
+
+def fill_out_ret_dict_from_state(ret_dict : Dict[str,str], base_str : str, st : hr.St):
+    assert app.house.electoral_fracs is not None
+    ef = app.house.electoral_fracs[st]
+    state = app.house.states[st]
+    ret_dict[base_str + "state"] = st.name
+    ret_dict[base_str + "frac"] = convert_frac_vote_to_str(ef.electoral_frac_vote)
+    ret_dict[base_str + "vote"] = state.get_electoral_no_votes_assigned_str()
+    ret_dict[base_str + "pop"] = convert_pop_to_str(state.pop)
 
 def fill_out_ret_dict_from_entire_us(ret_dict : Dict[str,str], base_str : str):
     ret_dict[base_str + "state"] = "Entire U.S."
@@ -129,16 +135,16 @@ def move_people_and_reload() -> Dict[str, str]:
                 move_people_value_int = int(val_percent)
 
                 if val_from == "ENTIRE":
-                    st_to = get_st_from_label(val_to)
+                    st_to = hr.St.from_name(val_to)
                     app.states.shift_population_from_entire_us_to_state(st_to, move_people_value_int)
 
                 elif val_to == "ENTIRE":
-                    st_from = get_st_from_label(val_from)
+                    st_from = hr.St.from_name(val_from)
                     app.states.shift_population_from_state_to_entire_us(st_from, move_people_value_int)
 
                 else:
-                    st_from = get_st_from_label(val_from)
-                    st_to = get_st_from_label(val_to)
+                    st_from = hr.St.from_name(val_from)
+                    st_to = hr.St.from_name(val_to)
                     app.states.shift_population_from_state_to_state(st_from, st_to, move_people_value_int)
                 
             except:
@@ -146,16 +152,10 @@ def move_people_and_reload() -> Dict[str, str]:
     
     # Assign house seats
     try:
-        app.states.assign_house_seats_priority()
+        app.assign_house_seats_priority()
     except:
         print("Could not assign house seats by priority method")
 
-    # Check no electoral college votes
-    try:
-        app.states.calculate_state_vote_fracs()
-    except:
-        print("Could not calculate electoral college votes")
-    
     ret_dict = {}
 
     # Return colors
@@ -166,15 +166,15 @@ def move_people_and_reload() -> Dict[str, str]:
     # Return vote frac
     ret_dict["vote_fracs"] = {}
     for state in app.states.states.values():
-        ret_dict["vote_fracs"]["#"+state.abbrev] = (get_label_from_st(state.st), state.frac_vote)
+        ret_dict["vote_fracs"]["#"+state.abbrev] = (state.st.name, state.frac_vote)
 
     # Return biggest/smallest vote frac
     biggest_frac, biggest_st = app.states.get_biggest_vote_frac()
     ret_dict["biggest_vote_frac"] = convert_frac_vote_to_str(biggest_frac)
-    ret_dict["biggest_vote_state"] = get_label_from_st(biggest_st)
+    ret_dict["biggest_vote_state"] = biggest_st.name
     smallest_frac, smallest_st = app.states.get_smallest_vote_frac()
     ret_dict["smallest_vote_frac"] = convert_frac_vote_to_str(smallest_frac)
-    ret_dict["smallest_vote_state"] = get_label_from_st(smallest_st)
+    ret_dict["smallest_vote_state"] = smallest_st.name
 
     # Return left/right comparison
     lr = compare()
@@ -194,7 +194,7 @@ def move_people_and_reload() -> Dict[str, str]:
             if request.form["state_move_from"] == "ENTIRE":
                 pop_move = app.states.get_total_us_population_actual()
             else:
-                st = get_st_from_label(request.form["state_move_from"])
+                st = hr.St.from_name(request.form["state_move_from"])
                 state = app.states.states[st]
                 pop_move = state.pop_actual
         
@@ -222,8 +222,8 @@ def compare() -> Dict[str, str]:
         compare_left = request.form["compare_left"]
         compare_right = request.form["compare_right"]
         try:
-            st_left = get_st_from_label(compare_left)
-            st_right = get_st_from_label(compare_right)
+            st_left = hr.St.from_name(compare_left)
+            st_right = hr.St.from_name(compare_right)
             state_left = app.states.states[st_left]
             state_right = app.states.states[st_right]
             ret_dict["compare_rel"] = "%.1fx" % (state_left.frac_vote / state_right.frac_vote)
