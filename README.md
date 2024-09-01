@@ -8,6 +8,7 @@ Your state's voting power in the electoral college.
 
 Created by: [Oliver K. Ernst](https://oliver-ernst.com) (2020)
 Source code: [GitHub](https://github.com/smrfeld/whats-my-vote-worth)
+Based on: [house-of-reps](https://github.com/smrfeld/house-of-reps)
 
 ## Running locally
 
@@ -27,7 +28,7 @@ flask run
 
 This application allows you to explore what your vote is worth 
 in the electoral college system in the United States.
-It uses [2010 census data](https://www.census.gov/content/dam/Census/library/publications/2011/dec/c2010br-08.pdf) for the population of each state.
+It uses **2020 census data** for the population of each state.
 
 For any given population of the states, the app ultimately computes the vote fraction defined as:
 
@@ -47,14 +48,14 @@ and the vote fraction would be unity for every state:
 <img style="width: 8%" src="static/limit_2.png"/>
 
 In the electoral college system, each state has different vote fractions.
-With the 2010 census populations, California has the lowest fraction: 0.84809,
-while Wyoming has the highest fraction: 3.03964.
-This means that every vote cast in California is worth c.a. 0.27 the vote of a voter in Wyoming,
-or equivalently every voter in Wyoming has the power of 3.58 Californians in deciding the U.S. presidential race.
+With the 2020 census populations, California has the lowest fraction: 0.84,
+while Wyoming has the highest fraction: 3.2.
+This means that every vote cast in California is worth c.a. 0.3 the vote of a voter in Wyoming,
+or equivalently every voter in Wyoming has the power of 3.8 Californians in deciding the U.S. presidential race.
 
 In this application, you can also shift the populations from 
 one state to another to explore how the vote fraction changes.
-For example, as the c.a. 35 million people in California are redistributed to the other states,
+For example, as the c.a. 40 million people in California are redistributed to the other states,
 the number of house representatives decreases, such that the electoral college votes decreases,
 such that the vote fraction grows - first to unity, and then beyond.
 

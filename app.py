@@ -145,23 +145,26 @@ def move_people_and_reload() -> Dict[str, str]:
             pass
         else:
             try:
-                perc_int = int(val_percent)
+                perc = int(val_percent) / 100.0
 
                 if val_from == "ENTIRE":
                     st_to = hr.St.from_name(val_to)
-                    hr.shift_pop_from_entire_us_to_state_by_global_percentage(app.house, st_to, perc_int, verbose=False)
+                    print(f"Moving from entire US to {st_to} by {perc}%")
+                    hr.shift_pop_from_entire_us_to_state_by_global_percentage(app.house, st_to, perc, verbose=False)
                     
                 elif val_to == "ENTIRE":
                     st_from = hr.St.from_name(val_from)
-                    hr.shift_pop_from_state_to_entire_us(app.house, st_from, perc_int, verbose=False)
+                    print(f"Moving from {st_from} to entire US by {perc}%")
+                    hr.shift_pop_from_state_to_entire_us(app.house, st_from, perc, verbose=False)
 
                 else:
                     st_from = hr.St.from_name(val_from)
                     st_to = hr.St.from_name(val_to)
-                    hr.shift_pop_from_state_to_state(app.house, st_from, st_to, perc_int, verbose=False)
+                    print(f"Moving from {st_from} to {st_to} by {perc}%")
+                    hr.shift_pop_from_state_to_state(app.house, st_from, st_to, perc, verbose=False)
                 
-            except:
-                print("Could not move people")
+            except Exception as e:
+                print(f"Could not move people: {str(e)}")
     
     # Assign house seats
     try:
